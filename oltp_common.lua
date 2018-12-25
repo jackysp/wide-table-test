@@ -184,15 +184,25 @@ function create_table(drv, con, table_num)
 
    print(string.format("Creating table 'sbtest%d'...", table_num))
 
-   query = string.format([[
+   query_prefix = string.format([[
 CREATE TABLE sbtest%d(
   id %s,
   k INTEGER DEFAULT '0' NOT NULL,
   c CHAR(120) DEFAULT '' NOT NULL,
-  pad CHAR(60) DEFAULT '' NOT NULL,
+  pad CHAR(60) DEFAULT 'pad' NOT NULL,]],
+      table_num, id_def)
+
+   col = ''
+   for i = 1, 200 do
+     col = col .. string.format("pad%d CHAR(60) DEFAULT 'pad%d' NOT NULL,", i, i)
+   end
+
+   query = string.format([[
+%s
+%s
   %s (id)
 ) %s %s]],
-      table_num, id_def, id_index_def, engine_def, extra_table_options)
+      query_prefix, col, id_index_def, engine_def, extra_table_options)
 
    con:query(query)
 
